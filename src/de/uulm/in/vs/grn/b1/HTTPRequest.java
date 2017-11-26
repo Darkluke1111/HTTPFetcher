@@ -6,6 +6,8 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.net.Socket;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -16,6 +18,7 @@ public class HTTPRequest implements AutoCloseable {
   private String host;
   private String path;
   private Socket socket;
+
 
   public HTTPRequest(String url) throws InvalidURLException {
     Matcher matcher = urlRegexp.matcher(url);
@@ -33,18 +36,16 @@ public class HTTPRequest implements AutoCloseable {
     }
   }
 
-  public void sendRequest() throws IOException {
+  public HTTPResponse sendRequest() throws IOException {
 
     try (BufferedWriter bw = new BufferedWriter(new OutputStreamWriter(socket.getOutputStream()));
          BufferedReader br = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
       bw.write(buildHttpRequest());
       bw.flush();
 
-      String line;
-      while((line = br.readLine()) != null) {
-        System.out.println(line);
-      }
+      String[] lines = br.lines().limit(20).toArray(String[]::new);
 
+      return new HTTPResponse(lines);
     }
   }
 
