@@ -17,7 +17,6 @@ public class HTTPResponse {
 
 
     int i = 0;
-    System.out.println(Arrays.toString(lines));
     Matcher m = statusPattern.matcher(lines[i]);
     if (m.matches()) {
       statusCode = Integer.parseInt(m.group(1));
@@ -25,11 +24,8 @@ public class HTTPResponse {
     }
     i++;
 
-    for (; i < lines.length && lines[i] != ""; i++) {
-      System.out.println(lines[i]);
+    for (; i < lines.length && !lines[i].equals(""); i++) {
       String[] temp = lines[i].split(": ");
-      System.out.println(temp[0]);
-      System.out.println(temp[1]);
       String key = temp[0];
       String value = temp[1];
       httpTags.put(key, value);
@@ -39,7 +35,7 @@ public class HTTPResponse {
 
     StringBuilder sb = new StringBuilder();
     for (; i < lines.length; i++) {
-      sb.append(lines[i] + "\r\n");
+      sb.append(lines[i] + "\n");
     }
     content = sb.toString();
   }

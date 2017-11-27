@@ -5,7 +5,9 @@ import java.io.BufferedWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.URL;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -14,23 +16,16 @@ import java.util.regex.Pattern;
 public class HTTPRequest implements AutoCloseable {
   private static final int httpPort = 80;
   private static final String httpVersion = "HTTP/1.1";
-  private static final Pattern urlRegexp = Pattern.compile("^(https?://)?([\\w\\d.]+)(/[\\w\\d]+)*$");
-  private String host;
-  private String path;
-  private Socket socket;
+
+  private final URL url;
+  private final Socket socket;
 
 
-  public HTTPRequest(String url) throws InvalidURLException {
-    Matcher matcher = urlRegexp.matcher(url);
+  public HTTPRequest(String address) throws InvalidURLException, MalformedURLException {
+    url = new URL("http://" + address);
 
-    if (!matcher.matches()) {
-      throw new InvalidURLException("The Url: " + url + " is not valid!");
-    } else {
-      host = matcher.group(2);
-      path = matcher.group(3);
-    }
     try {
-      socket = new Socket(host, httpPort);
+      socket = new Socket(url.getHost(), httpPort);
     } catch (IOException e) {
       throw new InvalidURLException();
     }
@@ -51,8 +46,8 @@ public class HTTPRequest implements AutoCloseable {
 
   private String buildHttpRequest() {
     String request =
-        "GET " + path + " " + httpVersion + "\r\n"
-            + "Host: " + host + "\r\n"
+        "GET " + url.getPath() + " " + httpVersion + "\r\n"
+            + "Host: " + url.getHost() + "\r\n"
             + "\r\n"
             + "\r\n";
 
