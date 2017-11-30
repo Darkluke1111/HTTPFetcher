@@ -14,7 +14,7 @@ public class HTTPResponse {
   private String content;
 
   public HTTPResponse(String[] lines) {
-
+    System.out.println("hallo");
 
     int i = 0;
     Matcher m = statusPattern.matcher(lines[i]);
@@ -29,13 +29,14 @@ public class HTTPResponse {
       String key = temp[0];
       String value = temp[1];
       httpTags.put(key, value);
-
+      System.out.print(".");
     }
     i++;
 
     StringBuilder sb = new StringBuilder();
     for (; i < lines.length; i++) {
       sb.append(lines[i] + "\n");
+      System.out.print("!");
     }
     content = sb.toString();
   }

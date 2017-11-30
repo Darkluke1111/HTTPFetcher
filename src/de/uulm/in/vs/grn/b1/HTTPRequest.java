@@ -38,9 +38,18 @@ public class HTTPRequest implements AutoCloseable {
       bw.write(buildHttpRequest());
       bw.flush();
 
-      String[] lines = br.lines().limit(20).toArray(String[]::new);
+      List<String> stringList = new LinkedList<>();
+      String line;
+      while((line = br.readLine()) != null) {
+        stringList.add(line);
+        System.out.println(line);
+      }
 
-      return new HTTPResponse(lines);
+      String[] arr = new String[stringList.size()];
+
+      arr = stringList.toArray(arr);
+
+      return new HTTPResponse(arr);
     }
   }
 
